@@ -26,7 +26,7 @@ public class EnemyController : MonoBehaviour
     GameController _gameController;
     UiController _uiController;
     private StateMachine _stateMachine;
-    private Animator _anim;
+    [SerializeField] private Animator _anim;
     private NavMeshAgent _navAgent;
 
     void Awake()
@@ -85,7 +85,7 @@ public class EnemyController : MonoBehaviour
         isTakingDamage = _isTakingDamage;
         if (!isTakingDamage)
         {
-            _anim.ResetTrigger("takingDamage");
+            // this._anim.ResetTrigger("takingDamage");
         }
     }
     public bool ReachDestination() => _navAgent.enabled && Vector3.Distance(transform.position, _navAgent.destination) < _navAgent.stoppingDistance;
