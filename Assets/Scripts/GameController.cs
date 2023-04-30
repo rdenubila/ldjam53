@@ -8,12 +8,20 @@ public class GameController : MonoBehaviour
     public int enemiesToCall = 5;
     public float enemiesDistanceToCall = 35;
     List<EnemyController> enemies = new List<EnemyController>();
+    IconPosition teethIcon;
 
     void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         StartRandomAttack();
+        AddIcon();
+    }
+
+    private void AddIcon()
+    {
+        GameObject icon = FindObjectOfType<UiController>().AddIcon("Teeth", null, Vector3.up * 5f);
+        teethIcon = icon.GetComponent<IconPosition>();
     }
 
     void OnApplicationFocus(bool hasFocus)
@@ -78,6 +86,13 @@ public class GameController : MonoBehaviour
             "StartAttack",
             Random.Range(1.5f, 3f)
         );
+    }
+
+    public void HandleIconVisibility(GameObject obj)
+    {
+        print(obj);
+        teethIcon.gameObject.SetActive(obj != null);
+        teethIcon.ReplaceObj(obj);
     }
 
 }

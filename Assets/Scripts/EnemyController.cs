@@ -24,6 +24,7 @@ public class EnemyController : MonoBehaviour
     public bool attackTrigger = false;
     PlayerController _playerController;
     GameController _gameController;
+    UiController _uiController;
     private StateMachine _stateMachine;
     private Animator _anim;
     private NavMeshAgent _navAgent;
@@ -31,6 +32,7 @@ public class EnemyController : MonoBehaviour
     void Awake()
     {
         _gameController = FindObjectOfType<GameController>();
+        _uiController = FindObjectOfType<UiController>();
         _playerController = FindObjectOfType<PlayerController>();
         _stateMachine = new StateMachine();
         _anim = GetComponent<Animator>();
@@ -40,7 +42,7 @@ public class EnemyController : MonoBehaviour
         var moveToPlayer = new EnemyMoveToPlayer(_navAgent, _playerController, this);
         var seeingPlayer = new EnemySeePlayer(_anim, this, _gameController);
         var takeDamage = new EnemyTakeDamage(_anim, this);
-        var attack = new EnemyAttack(_anim, this, _gameController);
+        var attack = new EnemyAttack(_anim, this, _gameController, _uiController);
         var die = new EnemyDie(_anim, this);
 
         At(idle, moveToPlayer, () => FollowPlayerIfIsAttacking());
@@ -172,5 +174,7 @@ public class EnemyController : MonoBehaviour
             }
         }
     }
+
+    public void DestroyObj(GameObject obj) => Destroy(obj);
 
 }

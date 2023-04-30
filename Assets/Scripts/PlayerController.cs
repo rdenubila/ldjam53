@@ -10,10 +10,12 @@ public class PlayerController : MonoBehaviour
     Animator _anim;
     public int health = 5;
     private PlayerMovement _playerMovement;
+    private GameController _gameController;
 
     void Awake()
     {
         _playerMovement = GetComponent<PlayerMovement>();
+        _gameController = FindObjectOfType<GameController>();
     }
 
     void Update()
@@ -36,7 +38,9 @@ public class PlayerController : MonoBehaviour
     {
         _enemyToAttack = CheckTarget(Camera.main.transform);
         if (!_enemyToAttack)
-            CheckTarget(transform);
+            _enemyToAttack = CheckTarget(transform);
+
+        _gameController?.HandleIconVisibility(_enemyToAttack);
     }
 
     GameObject CheckTarget(Transform objTransform)
