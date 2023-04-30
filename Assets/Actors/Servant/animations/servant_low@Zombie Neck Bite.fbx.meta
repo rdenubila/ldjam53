@@ -60,7 +60,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.91481483
+      - time: 1
         functionName: RestorePlayerMovement
         data: 
         objectReferenceParameter: {instanceID: 0}

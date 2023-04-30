@@ -73,10 +73,10 @@ public class GameController : MonoBehaviour
 
     private void StartRandomAttack()
     {
-        print("StartRandomAttack");
+        CancelInvoke("StartAttack");
         Invoke(
             "StartAttack",
-            Random.Range(3f, 6f)
+            Random.Range(1.5f, 3f)
         );
     }
 

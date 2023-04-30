@@ -495,7 +495,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101296769}
-  m_LocalRotation: {x: 0.12177476, y: 0.7642571, z: -0.15133809, w: 0.61496246}
+  m_LocalRotation: {x: 0.12177478, y: 0.7642571, z: -0.15133804, w: 0.6149626}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -833,7 +833,7 @@ GameObject:
   - component: {fileID: 1719848230}
   - component: {fileID: 1719848231}
   - component: {fileID: 5709757262610095515}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: player_servant
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1061,6 +1061,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 758d093ba292d3144b7d88cbd9d5a9fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health: 5
 --- !u!1 &940411226939001790
 GameObject:
   m_ObjectHideFlags: 0

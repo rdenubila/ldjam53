@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6425598063960999030}
   - component: {fileID: 1058809648}
   - component: {fileID: 1327107519635107556}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: hunter
   m_TagString: Hunter
   m_Icon: {fileID: 0}
@@ -70,12 +70,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d064c8f81f6ef64b90ca85ae260921f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health: 3
+  enemyType: 0
   followDistance: 10
   giveUpDistance: 20
   seeingInterval: 2.5
   boxCastDistance: 10
   boxCastSize: {x: 1, y: 1, z: 1}
+  isTakingDamage: 0
   isAttacking: 0
+  attackTrigger: 0
 --- !u!114 &6425598063960999030
 MonoBehaviour:
   m_ObjectHideFlags: 0

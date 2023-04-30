@@ -94,6 +94,7 @@ public class PlayerMovement : MonoBehaviour
         if (context.ReadValueAsButton())
         {
             _anim.SetTrigger("roll");
+            RestorePlayerMovement();
         }
     }
 
@@ -114,15 +115,19 @@ public class PlayerMovement : MonoBehaviour
         freezeMovement = true;
         _anim.SetTrigger("attack");
         _anim.applyRootMotion = false;
-        transform.DOMove(enemy.transform.position - Camera.main.transform.forward * 1f, .5f).SetDelay(.5f);
+        enemy.transform.LookAt(transform);
+        transform.DOMove(enemy.transform.position + enemy.transform.forward * 1f, .5f).SetDelay(.5f);
         transform.DORotateQuaternion(Quaternion.LookRotation(enemy.transform.position - transform.position), .5f);
     }
 
     public void RestorePlayerMovement()
     {
-        freezeMovement = false;
-        _anim.applyRootMotion = true;
-        OnEnemyStopTakingDamage.Invoke();
+        if (freezeMovement)
+        {
+            freezeMovement = false;
+            _anim.applyRootMotion = true;
+            OnEnemyStopTakingDamage.Invoke();
+        }
     }
 
     public delegate void EnemyStopTakingDamage();

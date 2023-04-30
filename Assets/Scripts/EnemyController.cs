@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 public enum EnemyType
 {
-    axe,
+    melee,
     pistol,
     tank
 }
@@ -12,7 +12,7 @@ public enum EnemyType
 public class EnemyController : MonoBehaviour
 {
     public int health = 3;
-    public EnemyType enemyType = EnemyType.axe;
+    public EnemyType enemyType = EnemyType.melee;
     public float followDistance = 10f;
     public float giveUpDistance = 20f;
     public float seeingInterval = 5f;
@@ -23,7 +23,6 @@ public class EnemyController : MonoBehaviour
     public bool isAttacking = false;
     public bool attackTrigger = false;
     PlayerController _playerController;
-    // PlayerMovement _playerMovement;
     GameController _gameController;
     private StateMachine _stateMachine;
     private Animator _anim;
@@ -44,12 +43,12 @@ public class EnemyController : MonoBehaviour
         var attack = new EnemyAttack(_anim, this, _gameController);
         var die = new EnemyDie(_anim, this);
 
-        At(idle, moveToPlayer, () => FollowPlayerIfIsAttacking() && !StartAttack());
+        At(idle, moveToPlayer, () => FollowPlayerIfIsAttacking());
+        At(idle, seeingPlayer, () => IsSeeingPlayer());
+        At(idle, attack, () => StartAttack());
         At(seeingPlayer, moveToPlayer, () => IsAttacking());
         At(moveToPlayer, idle, () => ReachDestination());
-        At(idle, seeingPlayer, () => IsSeeingPlayer());
         At(takeDamage, idle, () => !isTakingDamage);
-        At(idle, attack, () => StartAttack());
         At(moveToPlayer, attack, () => StartAttack());
         At(attack, idle, () => !StartAttack());
 
@@ -69,16 +68,24 @@ public class EnemyController : MonoBehaviour
     }
 
     void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);
-    bool FollowPlayerIfIsAttacking() => IsFarFromPlayer() && IsAttacking();
+    bool FollowPlayerIfIsAttacking() => IsFarFromPlayer() && IsAttacking() && !StartAttack();
     bool IsFarFromPlayer() => DistanceFromPlayer() > followDistance;
     bool IsNearToPlayer() => DistanceFromPlayer() < followDistance;
     bool IsSeeingPlayer() => !isAttacking && CheckVisibilityToPlayer();
     public bool IsAttacking() => isAttacking;
+    public bool IsTank() => enemyType == EnemyType.tank;
     public float DistanceFromPlayer() => Vector3.Distance(transform.position, player().position);
     public Transform player() => _playerController?.transform;
     public void LookAtPlayer() => transform.LookAt(player().transform);
     public void SetIsAttacking(bool _isAttacking) => isAttacking = _isAttacking;
-    public void SetIsTakingDamage(bool _isTakingDamage) => isTakingDamage = _isTakingDamage;
+    public void SetIsTakingDamage(bool _isTakingDamage)
+    {
+        isTakingDamage = _isTakingDamage;
+        if (!isTakingDamage)
+        {
+            _anim.ResetTrigger("takingDamage");
+        }
+    }
     public bool ReachDestination() => _navAgent.enabled && Vector3.Distance(transform.position, _navAgent.destination) < _navAgent.stoppingDistance;
 
     public bool StartAttack() => attackTrigger;
@@ -118,12 +125,51 @@ public class EnemyController : MonoBehaviour
 
     void HandleUpperBodyLayer()
     {
-        if (
-            enemyType == EnemyType.pistol
-            || enemyType == EnemyType.tank
-            )
+        if (enemyType == EnemyType.tank)
         {
             _anim.SetLayerWeight(1, 1f);
+        }
+    }
+
+    public void CheckAttackCollision()
+    {
+        switch (enemyType)
+        {
+            case EnemyType.melee:
+                CheckMeleeAttackCollision();
+                break;
+            case EnemyType.pistol:
+                CheckPistolAttackCollision();
+                break;
+        }
+    }
+
+    public bool CheckMeleeAttackCollision()
+    {
+        RaycastHit[] hits = Physics.SphereCastAll(transform.position, 1.5f, transform.forward, 1.5f);
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                hit.collider.GetComponent<PlayerController>().TakeDamage(gameObject);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void CheckPistolAttackCollision()
+    {
+        Ray ray = new Ray(transform.position + Vector3.up * 2f, transform.forward);
+        print("CheckAttackCollision");
+        Debug.DrawLine(ray.origin, ray.origin + ray.direction * 10f, Color.red, 3f);
+        RaycastHit[] hits = Physics.RaycastAll(ray, Mathf.Infinity);
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                hit.collider.GetComponent<PlayerController>().TakeDamage(gameObject);
+            }
         }
     }
 
