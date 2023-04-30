@@ -53,8 +53,11 @@ public class PlayerController : MonoBehaviour
             Debug.DrawLine(ray.origin, ray.origin + ray.direction * distanceToTarget, Color.red);
             if (Physics.Raycast(ray, out hit, distanceToTarget))
             {
-                Debug.DrawLine(ray.origin, hit.point, Color.green);
-                return hit.collider.gameObject;
+                if (hit.collider.CompareTag("Hunter"))
+                {
+                    Debug.DrawLine(ray.origin, hit.point, Color.green);
+                    return hit.collider.gameObject;
+                }
             }
         }
 
