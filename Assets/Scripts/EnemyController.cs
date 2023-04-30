@@ -94,6 +94,8 @@ public class EnemyController : MonoBehaviour
 
     public void Die()
     {
+        _navAgent.enabled = false;
+        GetComponent<CapsuleCollider>().enabled = false;
         Destroy(gameObject, 5f);
     }
 

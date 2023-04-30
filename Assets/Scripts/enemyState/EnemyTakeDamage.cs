@@ -37,6 +37,8 @@ public class EnemyTakeDamage : IState
 
     public void OnExit()
     {
+        _enemyController.SetIsAttacking(true);
+        _enemyController.ResetAttackTrigger();
         _collider.enabled = true;
         SetTakingDamage(false);
     }

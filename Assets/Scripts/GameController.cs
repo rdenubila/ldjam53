@@ -90,7 +90,6 @@ public class GameController : MonoBehaviour
 
     public void HandleIconVisibility(GameObject obj)
     {
-        print(obj);
         teethIcon.gameObject.SetActive(obj != null);
         teethIcon.ReplaceObj(obj);
     }
