@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,17 +12,25 @@ public class PlayerController : MonoBehaviour
     public int health = 5;
     private PlayerMovement _playerMovement;
     private GameController _gameController;
+    public Transform bloodTransform;
 
     void Awake()
     {
         _playerMovement = GetComponent<PlayerMovement>();
         _gameController = FindObjectOfType<GameController>();
+
+        GameStats.OnBloodCountUpdated += UpdateBloodStats;
     }
 
     void Update()
     {
         _anim = GetComponent<Animator>();
         CheckTarget();
+    }
+
+    void UpdateBloodStats(int current, int total, int limit)
+    {
+        bloodTransform.transform.DOScaleZ((float)current / (float)limit * 100f, 1f);
     }
 
     public GameObject GetEnemyToAttack() => _enemyToAttack;
@@ -31,7 +40,7 @@ public class PlayerController : MonoBehaviour
         _playerMovement.RestorePlayerMovement();
         transform.LookAt(from.transform);
         _anim.SetTrigger("takeDamage");
-        health--;
+        _gameController.gameStats.TakeDamage();
     }
 
     void CheckTarget()

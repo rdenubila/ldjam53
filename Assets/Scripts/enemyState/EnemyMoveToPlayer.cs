@@ -20,6 +20,7 @@ class EnemyMoveToPlayer : IState
     public void OnEnter()
     {
         _circlePos = GetCirclePos(_enemyController.followDistance * Random.Range(1f, .65f));
+        _navAgent.speed = 2f;
         _navAgent.enabled = true;
         _navAgent.isStopped = false;
         followPlayer();

@@ -28,8 +28,9 @@ public class EnemyMovement : MonoBehaviour
 
         if (_navAgent.enabled)
         {
-            Vector3 direction = (_navAgent.destination - transform.position).normalized;
-            transform.rotation = Quaternion.LookRotation(direction);
+            Vector3 direction = (_navAgent.steeringTarget - transform.position).normalized;
+            if (direction != Vector3.zero)
+                transform.rotation = Quaternion.LookRotation(direction);
         }
     }
 

@@ -24,15 +24,40 @@ public class GameController : MonoBehaviour
     public GameObject meleeHuntPrefab;
     public GameObject pistolHuntPrefab;
     public GameObject tankHuntPrefab;
+    public GameStats gameStats;
+    public UiController _ui;
+
+    public void ReceiveBlood()
+    {
+        LevelInfo info = GetCurrentLevel();
+        int blood = gameStats.GetCurrentBlood();
+
+        if (blood > info.bloodCount)
+        {
+            LevelUp();
+        }
+
+        gameStats.Reset();
+        InitLevel();
+    }
+
+    void LevelUp()
+    {
+
+    }
 
     void Start()
     {
+        _ui = GetComponent<UiController>();
+        gameStats = new GameStats(this);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         StartRandomAttack();
         AddIcon();
         enemySpawnPoints = GameObject.FindGameObjectsWithTag("HunterSpawnPoint").ToList<GameObject>();
         InitLevel();
+
+        gameStats.InvokeAll();
     }
 
     void InitLevel()
@@ -126,9 +151,11 @@ public class GameController : MonoBehaviour
         teethIcon.ReplaceObj(obj);
     }
 
+    LevelInfo GetCurrentLevel() => levelInfo[currentLevel];
+
     void SpawnEnemies()
     {
-        LevelInfo info = levelInfo[currentLevel];
+        LevelInfo info = GetCurrentLevel();
         int count = info.meleeCount + info.pistolCount + info.tankCount;
         IEnumerable<GameObject> currentPoints = enemySpawnPoints.OrderBy(item => Random.Range(0, enemySpawnPoints.Count()));
         print(currentPoints.Count());
@@ -155,8 +182,6 @@ public class GameController : MonoBehaviour
 
     void InstantiateEnemy(GameObject prefab, GameObject point)
     {
-        print(prefab);
-        print(point);
         GameObject obj = Instantiate(prefab, point.transform.position, point.transform.rotation);
     }
 

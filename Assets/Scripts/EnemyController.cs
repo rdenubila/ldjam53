@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,7 +16,7 @@ public class EnemyController : MonoBehaviour
     public int health = 3;
     public EnemyType enemyType = EnemyType.melee;
     public float followDistance = 10f;
-    public float giveUpDistance = 20f;
+    float giveUpDistance = 50f;
     public float seeingInterval = 5f;
     public float boxCastDistance = 10f;
     public Vector3 boxCastSize = new Vector3(1f, 1f, 1f);
@@ -37,17 +39,21 @@ public class EnemyController : MonoBehaviour
         _stateMachine = new StateMachine();
         _anim = GetComponent<Animator>();
         _navAgent = GetComponent<NavMeshAgent>();
+        List<GameObject> enemySpawnPoints = GameObject.FindGameObjectsWithTag("HunterSpawnPoint").ToList<GameObject>();
 
         var idle = new EnemyIdle(_anim, this);
         var moveToPlayer = new EnemyMoveToPlayer(_navAgent, _playerController, this);
+        var patrol = new EnemyPatrol(_navAgent, _playerController, this, enemySpawnPoints);
         var seeingPlayer = new EnemySeePlayer(_anim, this, _gameController);
-        var takeDamage = new EnemyTakeDamage(_anim, this);
+        var takeDamage = new EnemyTakeDamage(_anim, this, _gameController);
         var attack = new EnemyAttack(_anim, this, _gameController, _uiController);
         var die = new EnemyDie(_anim, this);
 
         At(idle, moveToPlayer, () => FollowPlayerIfIsAttacking());
         At(idle, seeingPlayer, () => IsSeeingPlayer());
+        At(patrol, seeingPlayer, () => IsSeeingPlayer());
         At(idle, attack, () => StartAttack());
+        At(idle, patrol, () => !IsAttacking());
         At(seeingPlayer, moveToPlayer, () => IsAttacking());
         At(moveToPlayer, idle, () => ReachDestination());
         At(takeDamage, idle, () => !isTakingDamage);
@@ -67,6 +73,11 @@ public class EnemyController : MonoBehaviour
     private void Update()
     {
         _stateMachine.Tick();
+
+        if (IsFarFromPlayer())
+        {
+            // SetIsAttacking(false);
+        }
     }
 
     void At(IState from, IState to, Func<bool> condition) => _stateMachine.AddTransition(from, to, condition);

@@ -10,15 +10,20 @@ public class EnemyTakeDamage : IState
     private float delay = 1f;
     private CapsuleCollider _collider;
 
-    public EnemyTakeDamage(Animator animator, EnemyController enemyController)
+    private GameController _gameController;
+    float currentTime;
+
+    public EnemyTakeDamage(Animator animator, EnemyController enemyController, GameController gameController)
     {
         _animator = animator;
         _enemyController = enemyController;
         _collider = _enemyController.gameObject.GetComponent<CapsuleCollider>();
+        _gameController = gameController;
     }
 
     public void OnEnter()
     {
+        currentTime = Time.time;
         _animator.SetTrigger("stopAnims");
         _collider.enabled = false;
         _enemyController.transform.DORotateQuaternion(
@@ -33,7 +38,19 @@ public class EnemyTakeDamage : IState
         });
     }
 
-    public void Tick() { }
+    void CheckIncrementBlood()
+    {
+        if (Time.time - currentTime > 1f)
+        {
+            currentTime = Time.time;
+            _gameController.gameStats.AddBlood();
+        }
+    }
+
+    public void Tick()
+    {
+        CheckIncrementBlood();
+     }
 
     public void OnExit()
     {
