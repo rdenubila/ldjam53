@@ -46,6 +46,10 @@ public class GameStats
     {
         health--;
         InvokeHealthUpdate();
+
+        if(health == 0) {
+            _gameController.GameOver();
+        }
     }
 
     public void InvokeBloodUpdate() => OnBloodCountUpdated.Invoke(currentBloodCount, totalBloodCount, bloodStockLimit);
@@ -58,6 +62,7 @@ public class GameStats
     }
 
     public int GetCurrentBlood() => currentBloodCount;
+    public int GetTotalBlood() => totalBloodCount;
     public int GetBloodRate() => bloodRate;
 
 

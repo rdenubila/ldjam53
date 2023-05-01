@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class LevelInfo
@@ -16,7 +17,7 @@ public class GameController : MonoBehaviour
 {
     public int enemiesToCall = 5;
     public float enemiesDistanceToCall = 35;
-    List<EnemyController> enemies = new List<EnemyController>();
+    [SerializeField] List<EnemyController> enemies = new List<EnemyController>();
     IconPosition teethIcon;
     List<GameObject> enemySpawnPoints;
     int currentLevel = 0;
@@ -27,12 +28,25 @@ public class GameController : MonoBehaviour
     public GameStats gameStats;
     public UiController _ui;
 
+    void Start()
+    {
+        _ui = GetComponent<UiController>();
+        gameStats = new GameStats(this);
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        AddIcon();
+        enemySpawnPoints = GameObject.FindGameObjectsWithTag("HunterSpawnPoint").ToList<GameObject>();
+        InitLevel();
+
+        gameStats.InvokeAll();
+    }
+
     public void ReceiveBlood()
     {
         LevelInfo info = GetCurrentLevel();
-        int blood = gameStats.GetCurrentBlood();
+        int blood = gameStats.GetTotalBlood();
 
-        if (blood > info.bloodCount)
+        if (blood >= info.bloodCount)
         {
             LevelUp();
         }
@@ -43,27 +57,20 @@ public class GameController : MonoBehaviour
 
     void LevelUp()
     {
-
+        _ui.ShowNotification("Level Up!");
+        currentLevel++;
     }
 
-    void Start()
-    {
-        _ui = GetComponent<UiController>();
-        gameStats = new GameStats(this);
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        StartRandomAttack();
-        AddIcon();
-        enemySpawnPoints = GameObject.FindGameObjectsWithTag("HunterSpawnPoint").ToList<GameObject>();
-        InitLevel();
-
-        gameStats.InvokeAll();
+    public void GameOver() {
+        PlayerPrefs.SetInt("Points", gameStats.GetTotalBlood());
+        SceneManager.LoadScene("GameOver");
     }
 
     void InitLevel()
     {
         DestroyAllEnemies();
         SpawnEnemies();
+        StartRandomAttack();
     }
 
     private void DestroyAllEnemies()
@@ -124,10 +131,7 @@ public class GameController : MonoBehaviour
             EnemyController currentEnemy = enemyList.ElementAt(Random.Range(0, enemyList.Count()));
             currentEnemy.Attack();
         }
-        else
-        {
-            StartRandomAttack();
-        }
+        StartRandomAttack();
     }
 
     public void AttackFinished()
@@ -158,7 +162,6 @@ public class GameController : MonoBehaviour
         LevelInfo info = GetCurrentLevel();
         int count = info.meleeCount + info.pistolCount + info.tankCount;
         IEnumerable<GameObject> currentPoints = enemySpawnPoints.OrderBy(item => Random.Range(0, enemySpawnPoints.Count()));
-        print(currentPoints.Count());
 
         int iPoint = 0;
         for (int i = 0; i < info.meleeCount; i++)

@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour
 
     void UpdateBloodStats(int current, int total, int limit)
     {
-        bloodTransform.transform.DOScaleZ((float)current / (float)limit * 100f, 1f);
+        bloodTransform?.transform?.DOScaleZ((float)current / (float)limit * 100f, 1f);
     }
 
     public GameObject GetEnemyToAttack() => _enemyToAttack;
