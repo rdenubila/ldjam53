@@ -10,6 +10,8 @@ public class GameOverScreen : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         text.text = "You delivered " + PlayerPrefs.GetInt("Points", 0) + " liters of blood to your master";
     }
 
